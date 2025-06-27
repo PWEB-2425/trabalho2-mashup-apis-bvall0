@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pesquisa</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fafb;
+    margin: 0; padding: 0;
+    color: #333;
+  }
+  header {
+    background: #007bff;
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+  header form button {
+    background: #dc3545;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  header form button:hover {
+    background: #c82333;
+  }
+  main {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+  form#searchForm {
+    display: flex;
+    margin-bottom: 24px;
+  }
+  input[type=text] {
+    flex-grow: 1;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  input[type=text]:focus {
+    border-color: #007bff;
+  }
+  button[type=submit] {
+    background: #007bff;
+    border: none;
+    padding: 0 24px;
+    font-size: 16px;
+    border-radius: 0 4px 4px 0;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button[type=submit]:hover {
+    background: #0056b3;
+  }
+
+  #error {
+    color: #d93025;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  /* Layout principal da pesquisa */
+  .search-results {
+    margin-top: 16px;
+  }
+  .search-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #007bff;
+  }
+
+  .main-info {
+    display: flex;
+    gap: 24px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    align-items: center;
+  }
+  #wikiImageContainer {
+    flex-shrink: 0;
+    width: 280px;
+    height: auto;
+  }
+  #wikiImageContainer img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .main-info .weather-icon {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    margin-right: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .main-info .weather-icon img {
+    width: 60px;
+    height: 60px;
+  }
+  .main-info .weather-icon .temp {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .main-info .info-box {
+    flex-grow: 1;
+  }
+  .main-info .info-box h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  .main-info .info-box p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+  }
+  .main-info .info-box a {
+    display: inline-block;
+    margin-top: 12px;
+    font-weight: 600;
+    color: #28a745;
+    text-decoration: none;
+  }
+  .main-info .info-box a:hover {
+    text-decoration: underline;
+  }
+
+  /* Fotos pequenas embaixo */
+  .photo-gallery {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .photo-gallery img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  }
+
+  /* Histórico */
+  .history {
+    margin-top: 48px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  }
+  .history h2 {
+    margin-top: 0;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+  }
+  .history ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .history ul li {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 1rem;
+    color: #555;
+  }
+  .history ul li:last-child {
+    border-bottom: none;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pesquisa</h1>
+  <form action="/logout" method="POST" style="display:inline;">
+    <button type="submit" title="Sair">Sair</button>
+  </form>
+</header>
+
+<main>
+  <form id="searchForm" autocomplete="off">
+    <input type="text" id="searchInput" name="query" placeholder="Pesquisar..." required />
+    <button type="submit">Pesquisar</button>
+  </form>
+
+  <div id="error"></div>
+
+  <section class="search-results" id="searchResults" style="display:none;">
+    <div class="search-title" id="searchTitle"></div>
+
+    <div class="main-info" id="mainInfo">
+      <div id="wikiImageContainer"></div>
+      <div class="weather-icon" id="weatherIcon"></div>
+      <div class="info-box" id="infoBox"></div>
+    </div>
+
+    <div class="photo-gallery" id="photoGallery"></div>
+  </section>
+
+  <section class="history" id="historySection">
+    <h2>Histórico de Pesquisas</h2>
+    <ul id="historyList"></ul>
+  </section>
+</main>
+
+<script>
+  const searchForm = document.getElementById('searchForm');
+  const searchInput = document.getElementById('searchInput');
+  const errorDiv = document.getElementById('error');
+  const searchResults = document.getElementById('searchResults');
+  const searchTitle = document.getElementById('searchTitle');
+  const weatherIconDiv = document.getElementById('weatherIcon');
+  const infoBoxDiv = document.getElementById('infoBox');
+  const photoGalleryDiv = document.getElementById('photoGallery');
+  const historyList = document.getElementById('historyList');
+  const wikiImageContainer = document.getElementById('wikiImageContainer');
+
+  async function fetchHistory() {
+    try {
+      const res = await fetch('/search/history');
+      if (res.ok) {
+        const history = await res.json();
+        historyList.innerHTML = history.length
+          ? history.map(item => `<li>${item.query}</li>`).join('')
+          : '<li>Sem histórico de pesquisas.</li>';
+      } else {
+        historyList.innerHTML = '<li>Erro ao carregar histórico.</li>';
+      }
+    } catch {
+      historyList.innerHTML = '<li>Erro de conexão no histórico.</li>';
+    }
+  }
+
+  async function doSearch(query) {
+    errorDiv.textContent = '';
+    searchResults.style.display = 'none';
+    weatherIconDiv.innerHTML = '';
+    infoBoxDiv.innerHTML = '';
+    photoGalleryDiv.innerHTML = '';
+    wikiImageContainer.innerHTML = '';
+
+    try {
+      const res = await fetch(`/search?query=${encodeURIComponent(query)}`);
+      if (!res.ok) {
+        errorDiv.textContent = 'Erro na pesquisa.';
+        return;
+      }
+
+      const data = await res.json();
+      searchTitle.textContent = `Pesquisa: ${query}`;
+      searchResults.style.display = 'block';
+
+      // Clima
+      if (data.weather?.weather?.length) {
+        const iconCode = data.weather.weather[0].icon;
+        const description = data.weather.weather[0].description;
+        const temp = data.weather?.main?.temp ? Math.round(data.weather.main.temp) : '';
+
+        weatherIconDiv.innerHTML = `
+          <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="${description}" />
+          <div class="temp">${temp}°C</div>
+          <div style="font-size:0.9rem; color:#555;">${description}</div>
+        `;
+      } else {
+        weatherIconDiv.textContent = 'Sem dados climáticos';
+      }
+
+      // Wikipedia
+      if (data.wikipedia?.extract) {
+        const title = data.wikipedia.title || query;
+        const extract = data.wikipedia.extract;
+        const wikiUrl = data.wikipedia.content_urls?.desktop?.page || `https://pt.wikipedia.org/wiki/${encodeURIComponent(query)}`;
+        const mainImage = data.wikipedia.originalimage?.source || '';
+
+        let imgHTML = '';
+        if (mainImage) {
+          imgHTML = `<img src="${mainImage}" alt="Imagem de ${title}" />`;
+        }
+
+        infoBoxDiv.innerHTML = `
+          <h2>${title}</h2>
+          <p>${extract}</p>
+          <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer">Ver mais na Wikipedia</a>
+        `;
+
+        wikiImageContainer.innerHTML = imgHTML;
+      } else {
+        infoBoxDiv.innerHTML = '<p>Sem informação na Wikipedia.</p>';
+      }
+
+      // Galeria de fotos (Pixabay)
+      photoGalleryDiv.innerHTML = '';
+      if (data.images?.length) {
+        data.images.forEach((url, idx) => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = `Imagem ${idx + 1} de ${query}`;
+          photoGalleryDiv.appendChild(img);
+        });
+      } else {
+        photoGalleryDiv.innerHTML = '<p style="grid-column: span 4;">Sem imagens disponíveis.</p>';
+      }
+
+      // Histórico atualizado
+      fetchHistory();
+
+    } catch (err) {
+      errorDiv.textContent = 'Erro na pesquisa.';
+    }
+  }
+
+  searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (query) doSearch(query);
+  });
+
+  fetchHistory();
+</script>
+</body>
+</html>

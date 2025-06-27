@@ -1,0 +1,52 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: auto;
+  padding: 1em;
+  background: #f5f5f5;
+}
+
+h1, h2, h3 {
+  color: #333;
+}
+
+form label {
+  display: block;
+  margin: 0.5em 0 0.2em;
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 0.5em;
+  margin-bottom: 1em;
+}
+
+button {
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1em;
+}
+
+#results img {
+  display: block;
+  margin-top: 0.5em;
+}
+
+#history ul {
+  list-style: none;
+  padding: 0;
+}
+
+#history li {
+  background: white;
+  margin-bottom: 0.3em;
+  padding: 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: #555;
+}
